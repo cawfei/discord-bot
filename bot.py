@@ -50,7 +50,7 @@ if __name__ == '__main__':
                     await message.channel.send(f'Nice {name}! Quack!\nHash: {img_hash}')
                 elif 'A wild pokémon has аppeаred!' in e.title:
                     print(utils.get_img_hash(e.image.url))
-                    await message.channel.send('A wild Pokémon... Quack.\nHash: {img_hash}')
+                    await message.channel.send(f'A wild Pokémon... Quack.\nHash: {img_hash}')
         
         await client.process_commands(message)
 
