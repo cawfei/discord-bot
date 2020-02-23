@@ -1,8 +1,8 @@
+import lib.utils as utils
 import discord
 
 def scrape_dex_info(e):
     deets = e.title.split()
-    print(len(deets))
     
     if len(deets) == 5:
         name = deets[3]
@@ -16,11 +16,10 @@ def scrape_dex_info(e):
     elif len(deets) == 7:
         name = f'Shiny {deets[4]} {deets[5]}'
 
-    return deets[-1][:-1], name
+    return deets[-1][:-1], name, utils.get_img_hash(e.image.url)
 
 def scrape_owned_info(e):
     deets = e.title.split()
-    print(len(deets))
     
     if len(deets) == 3:
         name = deets[2]
@@ -34,4 +33,4 @@ def scrape_owned_info(e):
     elif len(deets) == 5:
         name = f'Shiny {deets[3]} {deets[4]}'
 
-    return name
+    return name, utils.get_img_hash(e.image.url)

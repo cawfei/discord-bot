@@ -1,9 +1,6 @@
 import sys
 import discord
 import random
-import hashlib
-import os
-import requests
 from lib import poke_handler
 from lib import utils
 from lib import constants
@@ -43,13 +40,17 @@ if __name__ == '__main__':
                 print(f'title: {e.title}')
                 print(f'image url: {e.image.url}')
                 if 'Base stats for' in e.title:
-                    num, name = poke_handler.scrape_dex_info(e)
-                    await message.channel.send(f'The displayed pokemon is a {name} with National Dex entry: {num}')
+                    num, name, img_hash = poke_handler.scrape_dex_info(e)
+                    print(img_hash)
+                    await message.channel.send(f'The displayed Pokémon is a {name} with National Dex entry: {num}.\nHash: {img_hash}')
+
                 elif 'Level' in e.title:
-                    name = poke_handler.scrape_owned_info(e)
-                    await message.channel.send(f'Nice {name}! Quack!')
+                    name, img_hash = poke_handler.scrape_owned_info(e)
+                    print(img_hash)
+                    await message.channel.send(f'Nice {name}! Quack!\nHash: {img_hash}')
                 elif 'A wild pokémon has аppeаred!' in e.title:
-                    await message.channel.send('A wild pokemon... Quack')
+                    print(utils.get_img_hash(e.image.url))
+                    await message.channel.send('A wild Pokémon... Quack.\nHash: {img_hash}')
         
         await client.process_commands(message)
 
