@@ -36,21 +36,7 @@ if __name__ == '__main__':
             print('quack')
             await message.channel.send('Quack')
         elif message.author.id == constants.POKECORD_ID:
-            for e in message.embeds:
-                print(f'title: {e.title}')
-                print(f'image url: {e.image.url}')
-                if 'Base stats for' in e.title:
-                    num, name, img_hash = poke_handler.scrape_dex_info(e)
-                    print(img_hash)
-                    await message.channel.send(f'The displayed Pokémon is a {name} with National Dex entry: {num}.\nHash: {img_hash}')
-
-                elif 'Level' in e.title:
-                    name, img_hash = poke_handler.scrape_owned_info(e)
-                    print(img_hash)
-                    await message.channel.send(f'Nice {name}! Quack!\nHash: {img_hash}')
-                elif 'A wild pokémon has аppeаred!' in e.title:
-                    print(utils.get_img_hash(e.image.url))
-                    await message.channel.send(f'A wild Pokémon... Quack.\nHash: {img_hash}')
+            await poke_handler.handle_pokecord(message)
         
         await client.process_commands(message)
 
