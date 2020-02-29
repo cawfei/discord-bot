@@ -19,10 +19,10 @@ SANCTUARY_GUN_EMOTES = [
 POKEMON_VARIANTS = [
     '', # Default
     'Alolan',
-    'Galarian',
+    # 'Galarian',
     'Mega',
-    'Primal',
-    'Detective',
+    # 'Primal',
+    # 'Detective',
 ]
 
 NATIONAL_DEX_END = 890

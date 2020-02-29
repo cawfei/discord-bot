@@ -33,11 +33,8 @@ def get_bool(v):
 
 # Given a url, retrieve an image and return the md5 hash
 def get_img_hash(url):
-    page = requests.get(url)
-
-    f_ext = os.path.splitext(url)[-1]
-    f_name = 'img{}'.format(f_ext)
-    with open(f_name, 'wb') as f:
-        f.write(page.content)
-    
-    return hashlib.md5(open(f_name,'rb').read()).hexdigest()
+    response = requests.get(url)
+    # Check to make sure we got an HTTP 2XX response
+    if response.status_code // 100 != 2:
+        raise RuntimeError(f'failed to fetch image {url}')
+    return hashlib.sha256(response.content).hexdigest()

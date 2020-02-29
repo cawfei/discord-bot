@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     @tasks.loop(seconds=2)
     async def spam():
-        for cid in channels_to_spam:
+        for cid in list(channels_to_spam):
             if channels_to_spam[cid]:
                 channel = await client.fetch_channel(cid)
                 await channel.send(content="Quack")

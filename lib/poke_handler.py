@@ -21,10 +21,7 @@ class PokeLoader:
             self.all_variants.append(f'Shiny {v}')
 
     def get_next_pokemon(self):
-        if self.all_variants:
-            return f'{self.all_variants.pop()} {self.name}'
-        else:
-            return None
+        return f'{self.all_variants.pop()} {self.name}' if self.all_variants else None
 
 # Scrape information from dex info command
 # Format of title: #<dex-num> - <variant?> <name> <x/y?> <shiny?>
