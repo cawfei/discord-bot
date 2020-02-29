@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
         if message.author.id == const.POKECORD_ID:
             s_time = 0
-            if message.guild.id == 510099989788360704:
+            if message.guild.id == const.SANCTUARY_GUILD_ID:
                 s_time = 45
             await poke_handler.handle_pokecord(message, poke_assist, upload_to_dynamo, s_time)
         if client.user.mentioned_in(message) and message.mention_everyone is False:
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         global upload_to_dynamo
         if admin_id and ctx.message.author.id == admin_id:
             upload_to_dynamo = not upload_to_dynamo
-            await ctx.send(f'Upload Pokemon: {upload_to_dynamo}... Quack!')
+            await ctx.send(f'Upload Pokémon: {upload_to_dynamo}... Quack!')
         else:
             await ctx.send('Angry Quack!')
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                 poke_assist = utils.PokeAssist.assist
             elif pal == utils.PokeAssist.catch.name:
                 if is_bot:
-                    msg = 'Bot users cant catch Pokemon! Quack!'
+                    msg = 'Bot users cant catch Pokémon! Quack!'
                 else:
                     poke_assist = utils.PokeAssist.catch
             else:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     @client.command(aliases=['get'])
     async def retrieve(ctx, *, img_url):
-        msg = 'Sad Quack! Can\'t find the Pokemon...'
+        msg = 'Sad Quack! Can\'t find the Pokémon...'
         img_hash = utils.get_img_hash(img_url)
         found, name = dynamo.try_retrieve_pokemon(img_hash)
         if found:
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         if not admin_id or not ctx.message.author.id == admin_id:
             await ctx.send('Angry Quack!')
         elif not upload_to_dynamo:
-            await ctx.send(f'Must enable Pokemon upload... Quack')
+            await ctx.send(f'Must enable Pokémon upload... Quack')
         elif not len(inds) == 2:
             await ctx.send('Please provide pokedex start and end like this: \'d.lb 1 700\'. Quack.')
         elif is_bot:
@@ -154,6 +154,6 @@ if __name__ == '__main__':
         for cid in channels_to_spam:
             if channels_to_spam[cid]:
                 channel = await client.fetch_channel(cid)
-                await channel.send(content="Quack", delete_after=3)
+                await channel.send(content="Quack")
 
     client.run(token, bot=is_bot)

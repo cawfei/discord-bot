@@ -1,4 +1,3 @@
-import boto3
 import discord
 import random
 import time
@@ -164,7 +163,7 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
         if found:
             msg = f'Nice {name}! Quack!\nHash: {img_hash}'
         else:
-            msg =  f'Who\'s that Pokemon? Quack\nHash: {img_hash}'
+            msg =  f'Who\'s that Pokémon? Quack\nHash: {img_hash}'
 
         await message.channel.send(msg)
 
