@@ -1,6 +1,12 @@
 import hashlib
 import os
 import requests
+from enum import Enum
+
+class PokeAssist(Enum):
+    none = 1
+    assist = 2
+    catch = 3
 
 # print out how to run this bot
 def print_usage():
