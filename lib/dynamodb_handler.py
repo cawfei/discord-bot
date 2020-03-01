@@ -6,28 +6,29 @@ dynamodb = boto3.client(
     region_name='us-west-2'
 )
 
-def upload_to_poke_table(img_hash, dex_num, name, url, is_shiny, variant):
-    is_variant =  variant != ''
+def upload_to_poke_table(p_info):
+    is_variant =  p_info.variant != ''
+    name = p_info.name
     if is_variant:
-        name = f'{variant} {name}'
+        name = f'{p_info.variant} {p_info.name}'
 
     response = dynamodb.put_item(
         TableName = const.DYNAMO_POKE_HASH_TABLE_NAME,
         Item = {
             const.DYNAMO_IMG_HASH_KEY: { 
-                'S': img_hash
+                'S': p_info.img_hash
             },
             const.DYNAMO_DEX_NUM_KEY: { 
-                'N': str(dex_num)
+                'N': str(p_info.dex_num)
             },
             const.DYNAMO_NAME_KEY: { 
                 'S': name
             },
             const.DYNAMO_URL_KEY: { 
-                'S': url 
+                'S': p_info.url 
             },
             const.DYNAMO_SHINY_KEY: { 
-                'BOOL': is_shiny
+                'BOOL': p_info.is_shiny
             },
             const.DYNAMO_VARIANT_KEY: { 
                 'BOOL': is_variant

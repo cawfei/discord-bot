@@ -8,4 +8,4 @@ Install Required required imports:
 
 # Run
 
-    python3 bot.py <is_bot_user: true/false> <discord-token> <admin_discord_user_id>
+    python3 bot.py <is_bot_user: true/false> <discord_token> <admin_discord_user_id>

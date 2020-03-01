@@ -23,6 +23,15 @@ class PokeLoader:
     def get_next_pokemon(self):
         return f'{self.all_variants.pop()} {self.name}' if self.all_variants else None
 
+class PokeInfo:
+    def __init__(self, dex_num, name, url, img_hash, is_shiny, variant):
+        self.dex_num = dex_num
+        self.name = name
+        self.url = url
+        self.img_hash = img_hash
+        self.is_shiny = is_shiny
+        self.variant = variant
+
 # Scrape information from dex info command
 # Format of title: #<dex-num> - <variant?> <name> <x/y?> <shiny?>
 # Possibilities:
@@ -62,14 +71,14 @@ def scrape_dex_info(e):
         name = f'{deets[3]} {deets[4]}'
         is_shiny = True
 
-    return deets[0][1:], name, utils.get_img_hash(e.image.url), is_shiny, variant
+    return PokeInfo(deets[0][1:], name, e.image.url, utils.get_img_hash(e.image.url), is_shiny, variant)
 
 def set_bulk_load_params(start, end):
     global pokedex_load_bulk_num, pokedex_load_bulk_stop
     pokedex_load_bulk_num = start
     pokedex_load_bulk_stop = end
 
-def handle_bulk_loading():
+async def handle_bulk_loading():
     global poke_loader, pokedex_load_bulk_num, pokedex_load_bulk_stop, previous_command, upload_failures
 
     next_variant = poke_loader.get_next_pokemon()
@@ -95,7 +104,7 @@ def handle_bulk_loading():
 
     previous_command = msg
     # sleep for a bit so discord does not time us out
-    asyncio.sleep(sleep_time)
+    await asyncio.sleep(sleep_time)
     return msg
 
 # Handle all incoming messages pertaining to pokecord
@@ -110,7 +119,7 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
             await message.channel.send(msg)
         # We got throttled by pokecord. Waiting a bit and then starting from previous
         elif'You seem to be sending commands too fast' in message.content:
-            asyncio.sleep(5)
+            await asyncio.sleep(5)
             await message.channel.send(previous_command)
 
     if not message.embeds:
@@ -121,35 +130,35 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
     print(f'image url: {e.image.url}')
 
     if '#' in e.title and '-' in e.title:
-        num, name, img_hash, is_shiny, variant = scrape_dex_info(e)
+        p_info = scrape_dex_info(e)
         
         if poke_loader is None and not pokedex_load_bulk_stop == 0:
-            poke_loader = PokeLoader(name)
+            poke_loader = PokeLoader(p_info.name)
         
-        print(img_hash)
+        print(p_info.img_hash)
 
-        s_name = name
-        if is_shiny:
-            s_name = f'Shiny {variant} {name}'
+        s_name = p_info.name
+        if p_info.is_shiny:
+            s_name = f'Shiny {p_info.variant} {p_info.name}'
         else:
-            s_name = f'{variant} {name}'
+            s_name = f'{p_info.variant} {p_info.name}'
 
         if poke_loader is None:
-            await message.channel.send(f'The displayed Pokémon is a(n) {s_name} with National Dex entry: {num}.\nHash: {img_hash}')
+            await message.channel.send(f'The displayed Pokémon is a(n) {s_name} with National Dex entry: {p_info.dex_num}.\nHash: {p_info.img_hash}')
 
         if upload_to_dynamo:
-            is_success = dynamo.upload_to_poke_table(img_hash, num, name, e.image.url, is_shiny, variant)
+            is_success = dynamo.upload_to_poke_table(p_info)
             if not pokedex_load_bulk_stop == 0:
                 if not is_success:
-                    upload_failures.append((name, num, variant, is_shiny))
+                    upload_failures.append(p_info)
                 msg = handle_bulk_loading()
                 await message.channel.send(msg)
             else:
                 if not is_success:
-                    print(f'Failed to upload {s_name} with National Dex entry: {num}.\nHash: {img_hash}')
-                    await message.channel.send(f'Failed to upload {s_name} with National Dex entry: {num}.\nHash: {img_hash}')
+                    print(f'Failed to upload {s_name} with National Dex entry: {p_info.dex_num}.\nHash: {p_info.img_hash}')
+                    await message.channel.send(f'Failed to upload {s_name} with National Dex entry: {p_info.dex_num}.\nHash: {p_info.img_hash}')
                 else:
-                    print(f'Uploaded {s_name} with National Dex entry: {num}.\nHash: {img_hash}')
+                    print(f'Uploaded {s_name} with National Dex entry: {p_info.dex_num}.\nHash: {p_info.img_hash}')
 
 
     elif 'Level' in e.title:
@@ -176,7 +185,7 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
                 if pal == utils.PokeAssist.assist:
                     msg = f'Quack Quack! A wild {name} appeared!'
                 else: # catch mode
-                    asyncio.sleep(catch_sleep_time) # wait a period before catching
+                    await asyncio.sleep(catch_sleep_time) # wait a period before catching
                     msg = f'.catch {name}'
             else:
                 msg = f'A wild Pokémon I don\'t recognize Quack... can\'t {pal.name}...\nHash: {img_hash}'
