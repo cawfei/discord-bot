@@ -1,6 +1,6 @@
 import discord
 import random
-import time
+import asyncio
 import lib.dynamodb_handler as dynamo
 import lib.utils as utils
 import lib.constants as const
@@ -95,7 +95,7 @@ def handle_bulk_loading():
 
     previous_command = msg
     # sleep for a bit so discord does not time us out
-    time.sleep(sleep_time)
+    asyncio.sleep(sleep_time)
     return msg
 
 # Handle all incoming messages pertaining to pokecord
@@ -110,7 +110,7 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
             await message.channel.send(msg)
         # We got throttled by pokecord. Waiting a bit and then starting from previous
         elif'You seem to be sending commands too fast' in message.content:
-            time.sleep(5)
+            asyncio.sleep(5)
             await message.channel.send(previous_command)
 
     if not message.embeds:
@@ -176,7 +176,7 @@ async def handle_pokecord(message, pal, upload_to_dynamo, catch_sleep_time):
                 if pal == utils.PokeAssist.assist:
                     msg = f'Quack Quack! A wild {name} appeared!'
                 else: # catch mode
-                    time.sleep(catch_sleep_time) # wait a period before catching
+                    asyncio.sleep(catch_sleep_time) # wait a period before catching
                     msg = f'.catch {name}'
             else:
                 msg = f'A wild Pokémon I don\'t recognize Quack... can\'t {pal.name}...\nHash: {img_hash}'

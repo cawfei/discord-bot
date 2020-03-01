@@ -1,7 +1,6 @@
 import sys
 import discord
 import random
-import time
 from lib import poke_handler
 from lib import utils
 from lib import constants as const
